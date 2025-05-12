@@ -1,83 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Before After Image Slider</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f0f0f0;
-    }
-
-    .slider-container {
-      position: relative;
-      width: 600px;
-      max-width: 90%;
-      overflow: hidden;
-      cursor: ew-resize;
-    }
-
-    .slider-container img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .after-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 50%;
-      overflow: hidden;
-    }
-
-    .after-image img {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .slider-handle {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 4px;
-      height: 100%;
-      background: red;
-      z-index: 10;
-      transform: translateX(-50%);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>jQuery Image compare</title>
+    <link rel="stylesheet" href="src/assets/css/images-compare.css"/>
 </head>
 <body>
 
-<div class="slider-container" id="slider">
-  <img src="https://i.ibb.co.com/V0rQZ54B/before.png" alt="Before">
-  <div class="after-image" id="afterImage">
-    <img src="https://i.ibb.co.com/5WqGDNtn/after.png" alt="After">
-  </div>
-  <div class="slider-handle" id="handle"></div>
+<div class="page-container">
+    <!-- Test 1 -->
+    <div class="js-img-compare">
+        <div style="display: none;">
+                    <img src="src/img/before.png" alt="Before">
+        </div>
+        <div>
+        
+            <img src="src/img/after.png" alt="After">
+        </div>
+    </div>
+
+
 </div>
 
-<script>
-  const slider = document.getElementById('slider');
-  const afterImage = document.getElementById('afterImage');
-  const handle = document.getElementById('handle');
 
-  slider.addEventListener('mousemove', function (e) {
-    const rect = slider.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const percent = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
-    afterImage.style.width = percent + '%';
-    handle.style.left = percent + '%';
-  });
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script type="text/javascript" src="src/assets/js/jquery.images-compare.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var imagesCompareElement = $('.js-img-compare').imagesCompare();
+        var imagesCompare = imagesCompareElement.data('imagesCompare');
+        var events = imagesCompare.events();
+
+        imagesCompare.on(events.changed, function (event) {
+            console.log(events.changed);
+            console.log(event.ratio);
+            if (event.ratio < 0.4) {
+                console.log('We see more than half of the back image');
+            }
+            if (event.ratio > 0.6) {
+                console.log('We see more than half of the front image');
+            }
+
+            if (event.ratio <= 0) {
+                console.log('We see completely back image');
+            }
+
+            if (event.ratio >= 1) {
+                console.log('We see completely front image');
+            }
+        });
+
+        $('.js-front-btn').on('click', function (event) {
+            event.preventDefault();
+            imagesCompare.setValue(1, true);
+        });
+
+        $('.js-back-btn').on('click', function (event) {
+            event.preventDefault();
+            imagesCompare.setValue(0, true);
+        });
+
+        $('.js-toggle-btn').on('click', function (event) {
+            event.preventDefault();
+            if (imagesCompare.getValue() >= 0 && imagesCompare.getValue() < 1) {
+                imagesCompare.setValue(1, true);
+            } else {
+                imagesCompare.setValue(0, true);
+            }
+        });
+    });
 </script>
-
 </body>
 </html>
